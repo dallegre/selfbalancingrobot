@@ -1,6 +1,7 @@
 //mpu6050 sketch for eventually doing the old inverted pendulum thing.
 //i2c library
 //added this comment to look at a change in a git repository.
+//dur dur turpa derp.
 #include<Wire.h>
 
 #include "mpu.h"
@@ -17,7 +18,7 @@ int16_t gx, gy, gz;
 int angle, adjustment;
 float coeffa = .08, coeffb = -.02;   //.08, -.02
 
-mpu5060 mpu;
+mpu6050 mpu;
 motors  motorcontrol;
 calc    calculus;
 

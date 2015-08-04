@@ -2,7 +2,7 @@
 
 const int ledPin =  13;
 
-class mpu5060{
+class mpu6050{
   public:
     int  data;
     int  gyro_xout_h, gyro_xout_l, gyro_yout_h, gyro_yout_l, gyro_zout_h, gyro_zout_l,
@@ -31,7 +31,7 @@ class mpu5060{
     int  get_accel_yangle(void);
 };
 
-void mpu5060::setup_i2c(void){
+void mpu6050::setup_i2c(void){
 
   pinMode(ledPin,  OUTPUT);
   Wire.begin(MPU6050_ADDRESS);
@@ -39,7 +39,7 @@ void mpu5060::setup_i2c(void){
 
 }
 
-int mpu5060::read_i2c(int address){
+int mpu6050::read_i2c(int address){
 
   Wire.beginTransmission(0xd2>>1);
   Wire.send(address);
@@ -52,7 +52,7 @@ int mpu5060::read_i2c(int address){
 
 }
 
-void mpu5060::write_i2c(int address, int data){
+void mpu6050::write_i2c(int address, int data){
   
   Wire.beginTransmission(0xd2>>1);
   Wire.send(address);
@@ -61,7 +61,7 @@ void mpu5060::write_i2c(int address, int data){
 
 }
 
-void mpu5060::verify_i2c(void){
+void mpu6050::verify_i2c(void){
   
   data = this->read_i2c(MPU6050_RA_WHO_AM_I);
   
@@ -73,7 +73,7 @@ void mpu5060::verify_i2c(void){
 
 }
 
-void mpu5060::initialize_chip(void){
+void mpu6050::initialize_chip(void){
   //Sets sample rate to 8000/1+7 = 1000Hz
   this->write_i2c(MPU6050_RA_SMPLRT_DIV, 0x07);
   //Disable FSync, 20Hz DLPF
@@ -154,7 +154,7 @@ void mpu5060::initialize_chip(void){
   Serial.println();
 }
 
-void mpu5060::get_gyro_rates(void){
+void mpu6050::get_gyro_rates(void){
   
   gyro_xout_h = this->read_i2c(MPU6050_RA_GYRO_XOUT_H);
   gyro_xout_l = this->read_i2c(MPU6050_RA_GYRO_XOUT_L);
@@ -186,7 +186,7 @@ void mpu5060::get_gyro_rates(void){
   
 }
 
-void mpu5060::calibrate_gyro(void){
+void mpu6050::calibrate_gyro(void){
   
   Serial.println("Calibrating gyroscope");
   Serial.println();
@@ -220,19 +220,19 @@ void mpu5060::calibrate_gyro(void){
 
 }
 
-int mpu5060::getx(void){
+int mpu6050::getx(void){
   return gyro_xrate;
 }
 
-int mpu5060::gety(void){
+int mpu6050::gety(void){
   return gyro_xrate;
 }
 
-int mpu5060::getz(void){
+int mpu6050::getz(void){
   return gyro_xrate;
 }
 
-void mpu5060::get_accel_values(){
+void mpu6050::get_accel_values(){
   
   accel_xout_h = this->read_i2c(MPU6050_RA_ACCEL_XOUT_H);
   accel_xout_l = this->read_i2c(MPU6050_RA_ACCEL_XOUT_L);
@@ -255,7 +255,7 @@ void mpu5060::get_accel_values(){
 } 
  
 //Converts the already acquired accelerometer data into 3D euler angles
-void mpu5060::get_accel_angles(void){
+void mpu6050::get_accel_angles(void){
 
   //the thing is oriented funny, so substitute these accordingly.
   accel_xangle = 100*57.295*atan((float)accel_zout/ sqrt(pow((float)accel_yout,2)+pow((float)accel_zout,2)));
@@ -268,25 +268,25 @@ void mpu5060::get_accel_angles(void){
 
 } 
 
-int mpu5060::get_accelx(void){
+int mpu6050::get_accelx(void){
   return accel_xout;
 }
 
 
-int mpu5060::get_accely(void){
+int mpu6050::get_accely(void){
   return accel_yout;
 }
 
 
-int mpu5060::get_accelz(void){
+int mpu6050::get_accelz(void){
   return accel_zout;
 }
 
-int mpu5060::get_accel_xangle(void){
+int mpu6050::get_accel_xangle(void){
   return accel_xangle;
 }
 
 
-int mpu5060::get_accel_yangle(void){
+int mpu6050::get_accel_yangle(void){
   return accel_yangle;
 }
