@@ -15,7 +15,7 @@ int16_t ax, ay, az, xangle, yangle;
 int16_t gx, gy, gz;
 
 //calculation variables
-int angle, adjustment;
+int angle, adjustment, calib;
 float coeffa = .08, coeffb = -.02;   //.08, -.02
 
 mpu6050 mpu;
@@ -34,7 +34,8 @@ void setup() {
   mpu.setup_i2c();
   mpu.verify_i2c();
   mpu.initialize_chip();
-  mpu.calibrate_gyro();
+  //mpu.calibrate_gyro();
+  mpu.calibrate_accel();
 
 }
 
@@ -67,8 +68,8 @@ void loop() {
 
   adjustment = (int)(coeffa*(float)angle + coeffb*(float)calculus.derivative(angle));
 
-  //Serial.print("angle is: ");
-  //Serial.println(angle);
+  Serial.print("angle is: ");
+  Serial.println(angle);
 
   if(adjustment > 0)
     motorcontrol.go(1,1,adjustment/2);

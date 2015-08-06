@@ -9,7 +9,7 @@ class mpu6050{
       gyro_xout, gyro_yout, gyro_zout, gyro_xrate, gyro_yrate, gyro_zrate,
       gyro_xoffset, gyro_yoffset, gyro_zoffset, gyro_xsum, gyro_ysum, gyro_zsum,
       accel_xout_h, accel_xout_l, accel_yout_h, accel_yout_l, accel_zout_h, accel_zout_l,
-      accel_xout, accel_yout, accel_zout, accel_xangle, accel_yangle;
+      accel_xout, accel_yout, accel_zout, accel_xangle, accel_yangle, accel_average;
     //not sure about these.  will have to do a little research.
     int  gyro_xsensitivity = 20, gyro_ysensitivity = 20, gyro_zsensitivity = 20;
     void setup_i2c(void);
@@ -29,6 +29,7 @@ class mpu6050{
     int  get_accelz(void);
     int  get_accel_xangle(void);
     int  get_accel_yangle(void);
+    void calibrate_accel(void);
 };
 
 void mpu6050::setup_i2c(void){
@@ -253,12 +254,22 @@ void mpu6050::get_accel_values(){
   //Serial.println(accel_zout);
   
 } 
+
+void mpu6050::calibrate_accel(void){
+  int accel_total = 0;
+  for(int x = 0; x < 100; x++){
+    this->get_accel_values();
+    this->get_accel_angles();
+    accel_total += accel_xangle;
+  }  
+  accel_average = (float)accel_total/100;
+}
  
 //Converts the already acquired accelerometer data into 3D euler angles
 void mpu6050::get_accel_angles(void){
 
   //the thing is oriented funny, so substitute these accordingly.
-  accel_xangle = 100*57.295*atan((float)accel_zout/ sqrt(pow((float)accel_yout,2)+pow((float)accel_zout,2)));
+  accel_xangle = 100*57.295*atan((float)accel_zout/ sqrt(pow((float)accel_yout,2)+pow((float)accel_zout,2))) - accel_average;   //use calibration here
   accel_yangle = 100*57.295*atan((float)-accel_yout/ sqrt(pow((float)accel_zout,2)+pow((float)accel_yout,2)));  
 
   //Serial.print("accelerometer x angle is: ");
