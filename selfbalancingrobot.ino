@@ -16,7 +16,7 @@ int16_t gx, gy, gz;
 
 //calculation variables
 int angle, adjustment, calib;
-float coeffa = .08, coeffb = -.02;   //.08, -.02
+float coeffa = .10, coeffb = -.1;   //.08, -.02
 
 mpu6050 mpu;
 motors  motorcontrol;
@@ -25,8 +25,6 @@ calc    calculus;
 void setup() {
   
   Serial.begin(38400);
-
-  Serial.println("lasdkfj");
 
   motorcontrol.setup_motors();
   motorcontrol.go(0,0,0);
@@ -55,21 +53,9 @@ void loop() {
   xangle = mpu.get_accel_xangle();
   yangle = mpu.get_accel_yangle();
 
-  //Serial.println();
-  //Serial.println();
-  //Serial.print("gy is: ");
-  //Serial.println(gy);
-  //Serial.print("az is: ");
-  //Serial.println(az);
-  //Serial.print("xangle is: ");
-  //Serial.println(xangle + 500);
-
   angle = xangle;
 
-  adjustment = (int)(coeffa*(float)angle + coeffb*(float)calculus.derivative(angle));
-
-  Serial.print("angle is: ");
-  Serial.println(angle);
+  adjustment = (int)(coeffa*(float)angle - coeffb*(float)calculus.derivative(angle));
 
   if(adjustment > 0)
     motorcontrol.go(1,1,adjustment/2);
@@ -79,10 +65,8 @@ void loop() {
   i = ~i;
   if(i){
     digitalWrite(ledPin, LOW);
-    //motorcontrol.go(1,0,30);
   }else{
     digitalWrite(ledPin, HIGH);
-    //motorcontrol.go(0,0,30);
   }
 
 }

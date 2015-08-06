@@ -10,7 +10,6 @@ class mpu6050{
       gyro_xoffset, gyro_yoffset, gyro_zoffset, gyro_xsum, gyro_ysum, gyro_zsum,
       accel_xout_h, accel_xout_l, accel_yout_h, accel_yout_l, accel_zout_h, accel_zout_l,
       accel_xout, accel_yout, accel_zout, accel_xangle, accel_yangle, accel_average;
-    //not sure about these.  will have to do a little research.
     int  gyro_xsensitivity = 20, gyro_ysensitivity = 20, gyro_zsensitivity = 20;
     void setup_i2c(void);
     void verify_i2c(void);
@@ -78,7 +77,7 @@ void mpu6050::initialize_chip(void){
   //Sets sample rate to 8000/1+7 = 1000Hz
   this->write_i2c(MPU6050_RA_SMPLRT_DIV, 0x07);
   //Disable FSync, 20Hz DLPF
-  this->write_i2c(MPU6050_RA_CONFIG, 0x01);
+  this->write_i2c(MPU6050_RA_CONFIG, 0x04);
   //Disable gyro self tests, scale of 500 degrees/s
   this->write_i2c(MPU6050_RA_GYRO_CONFIG, 0b00001000);
   //Disable accel self tests, scale of +-2g, no DHPF
@@ -245,24 +244,24 @@ void mpu6050::get_accel_values(){
   accel_xout = (short)((accel_xout_h<<8)|accel_xout_l);
   accel_yout = (short)((accel_yout_h<<8)|accel_yout_l);
   accel_zout = (short)((accel_zout_h<<8)|accel_zout_l);  
-
-  //Serial.print("accelerometer x value is: ");
-  //Serial.println(accel_xout);
-  //Serial.print("accelerometer y value is: ");
-  //Serial.println(accel_yout);
-  //Serial.print("accelerometer z value is: ");
-  //Serial.println(accel_zout);
   
 } 
 
 void mpu6050::calibrate_accel(void){
+  
+  Serial.println();
+  Serial.println("Calibrating accelerometer");
+  
   int accel_total = 0;
-  for(int x = 0; x < 100; x++){
+  for(int x = 0; x < 500; x++){
     this->get_accel_values();
     this->get_accel_angles();
     accel_total += accel_xangle;
   }  
-  accel_average = (float)accel_total/100;
+  accel_average = (float)accel_total/500;
+
+  Serial.println("Done calibrating accelerometer");
+
 }
  
 //Converts the already acquired accelerometer data into 3D euler angles
@@ -271,11 +270,6 @@ void mpu6050::get_accel_angles(void){
   //the thing is oriented funny, so substitute these accordingly.
   accel_xangle = 100*57.295*atan((float)accel_zout/ sqrt(pow((float)accel_yout,2)+pow((float)accel_zout,2))) - accel_average;   //use calibration here
   accel_yangle = 100*57.295*atan((float)-accel_yout/ sqrt(pow((float)accel_zout,2)+pow((float)accel_yout,2)));  
-
-  //Serial.print("accelerometer x angle is: ");
-  //Serial.println(accel_xangle);
-  //Serial.print("accelerometer y angle is: ");
-  //Serial.println(accel_yangle);
 
 } 
 
